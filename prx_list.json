@@ -1,17 +1,6 @@
 {
     "halt_shutdown": [
-        "python.exe",
-        "cmd.exe",
-        "pythonw.exe",
-        "explorer.exe",
-        "wlrmdr.exe",
-        "Taskmgr.exe",
-        "Steam.exe",
-        "notepad++.exe",
-        "steamwebhelper.exe",
-        "SndVol.exe",
-        "VirtualBox.exe",
-        "gimp-2.8.exe"
+        "dota2.exe"
     ],
     "no_prompt": [
         "python.exe",
@@ -26,6 +15,11 @@
         "steamwebhelper.exe",
         "SndVol.exe",
         "VirtualBox.exe",
-        "gimp-2.8.exe"
+        "gimp-2.8.exe",
+        "flux.exe",
+        "ShellExperienceHost.exe",
+        "ApplicationFrameHost.exe",
+        "SearchUI.exe",
+        "dota2.exe"
     ]
 }

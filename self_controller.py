@@ -71,10 +71,6 @@ with open(F, 'r') as f:
     halt_shutdown = raw_prx_list['halt_shutdown']
     no_prompt = raw_prx_list['no_prompt']
 
-response = ctypes.windll.user32.MessageBoxW(None,
-                                                "You're being watched.",
-                                                "Self Controller",
-                                                MB_OK | ICON_INFO)
 
 
 def legal_time(now):
@@ -106,7 +102,7 @@ def prompt(foreground):
     :param foreground: process to judge
     """
     response = ctypes.windll.user32.MessageBoxW(None,
-                                                "Is {} a legal program?".\
+                                                "Should {} halt shutdown?".\
                                                 format(foreground),
                                                 "Self Controller",
                                                 MB_YESNO | ICON_INFO)
@@ -138,11 +134,13 @@ def shutdown_query():
     """
     foreground = active_window_process_name()
     now = datetime.datetime.now().time()
+
     # If all the conditions are met, shutdown:  (Note this is order-specific)
     if prompted(foreground) and not legal_prx(foreground)\
     and not legal_time(now):
         stop_time = datetime.datetime.now() + datetime.timedelta(seconds=10)
         iter_time = datetime.datetime.now()
+
         # While still timing...
         while iter_time < stop_time:
             time.sleep(0.05)
@@ -152,8 +150,10 @@ def shutdown_query():
                 return None
             # Update time for the loop...
             iter_time = datetime.datetime.now()
+
         # Otherwise...
         return shutdown()
+
     # We didn't satisfy the conditions to begin with, so leave...
     return None
 
@@ -164,7 +164,8 @@ def active_window_process_name():
     """
     while True:
         try:
-            pid = win32process.GetWindowThreadProcessId(win32gui.GetForegroundWindow())
+            pid = win32process.GetWindowThreadProcessId(win32gui.\
+                                                        GetForegroundWindow())
             pname = psutil.Process(pid[-1]).name()
         except:
             pass
@@ -174,6 +175,27 @@ def active_window_process_name():
 
 def main():
     """ Main execution loop. """
+    # If time is after EARLIEST and before LATEST, wait for some time:
+    if datetime.datetime.combine(datetime.date.today(), EARLIEST) < \
+    datetime.datetime.now() < \
+    datetime.datetime.combine(datetime.date.today(), LATEST):
+        # Sleep until it's time to do stuff:
+        sleep = (datetime.datetime.combine(datetime.date.today(), LATEST) - \
+                 datetime.datetime.now()).total_seconds()
+    # Else, start right now:
+    else:
+        sleep = 0
+
+    response = ctypes.windll.user32.MessageBoxW(None,
+                                                "You're being watched.\nSleepi"
+                                                "ng for {} seconds.".\
+                                                format(round(sleep)),
+                                                "Self Controller",
+                                                MB_OK | ICON_INFO)
+    # Sleep seems to be off than less than 1 millisecond after 60s of sleeping,
+    # so this can't realistically be an issue:
+    time.sleep(sleep)
+
     while True:
         time.sleep(0.1)
         response = shutdown_query()
