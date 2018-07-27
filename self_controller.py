@@ -171,9 +171,9 @@ def main():
             time.sleep(5)
             prompted(active_window_process_name())
 
-    # When in normal execution, check every 5th of a second:
+    # When in normal execution, check every 5 seconds:
     while True:
-        time.sleep(0.2)
+        time.sleep(5)
         response = shutdown_query()
         if response and response.returncode != 0:
             raise ValueError('Shutdown returned non-zero exit code: '
