@@ -164,7 +164,7 @@ def main():
     datetime.datetime.now() < \
     datetime.datetime.combine(datetime.date.today(), LATEST):
         response = ctypes.windll.user32.MessageBoxW(None,
-                                            "Waiting for shutdown.",
+                                            "Waiting for shutdown...",
                                             "Self Controller",
                                             MB_OK | ICON_INFO)
         # While still time to delay:
@@ -177,8 +177,7 @@ def main():
 
     else:
         response = ctypes.windll.user32.MessageBoxW(None,
-                                    "Past bedtime and nothing to"
-                                    " wait for.\nShutting down...",
+                                    "Past bedtime...",
                                     "Self Controller",
                                     MB_OK | ICON_INFO)
 
