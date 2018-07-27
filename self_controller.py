@@ -51,8 +51,8 @@ ID_NO = 7
 
 ########################
 # Times:
-EARLIEST = datetime.time(7) # Hours
-LATEST = datetime.time(23)
+EARLIEST = datetime.time(8) # Hours
+LATEST = datetime.time(23, 30)
 
 ########################
 # Process list file:
@@ -163,6 +163,10 @@ def main():
     if datetime.datetime.combine(datetime.date.today(), EARLIEST) < \
     datetime.datetime.now() < \
     datetime.datetime.combine(datetime.date.today(), LATEST):
+        response = ctypes.windll.user32.MessageBoxW(None,
+                                            "Waiting for shutdown.",
+                                            "Self Controller",
+                                            MB_OK | ICON_INFO)
         # While still time to delay:
         while datetime.datetime.now() < \
         datetime.datetime.combine(datetime.date.today(), LATEST):
@@ -170,6 +174,13 @@ def main():
             # process:
             time.sleep(5)
             prompted(active_window_process_name())
+
+    else:
+        response = ctypes.windll.user32.MessageBoxW(None,
+                                    "Past bedtime and nothing to"
+                                    " wait for.\nShutting down...",
+                                    "Self Controller",
+                                    MB_OK | ICON_INFO)
 
     # When in normal execution, check every 5 seconds:
     while True:
