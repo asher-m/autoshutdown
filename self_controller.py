@@ -121,7 +121,6 @@ def get_running_prx():
 def prompted(foreground):
     if foreground not in no_prompt:
         prompt(foreground)
-    return True
 
 def shutdown():
     """ Tells the system to shutdown. """
@@ -170,7 +169,7 @@ def main():
             # Sleep for 5 seconds, then see if we've already profiled this
             # process:
             time.sleep(5)
-            _ = prompted(active_window_process_name())
+            prompted(active_window_process_name())
 
     # When in normal execution, check every 5th of a second:
     while True:
