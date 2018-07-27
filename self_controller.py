@@ -121,6 +121,7 @@ def get_running_prx():
 def prompted(foreground):
     if foreground not in no_prompt:
         prompt(foreground)
+    write()
 
 def shutdown():
     """ Tells the system to shutdown. """
@@ -191,12 +192,13 @@ def main():
         elif response:
             break
 
+def write():
+    with open(F, 'w') as f:
+        json.dump({'halt_shutdown':halt_shutdown, 'no_prompt':no_prompt},
+                  f, indent=4, sort_keys=True)
+
 
 try:
     main()
 except Exception as e:
     print('WARNING: Exception caught:\n{}'.format(e))
-finally:
-    with open(F, 'w') as f:
-        json.dump({'halt_shutdown':halt_shutdown, 'no_prompt':no_prompt},
-                  f, indent=4, sort_keys=True)

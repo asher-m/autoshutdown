@@ -22,6 +22,8 @@
         "ApplicationFrameHost.exe",
         "SearchUI.exe",
         "dota2.exe",
-        "factorio.exe"
+        "factorio.exe",
+        "putty.exe",
+        "filezilla.exe"
     ]
 }
