@@ -28,6 +28,7 @@ import sys
 import time
 
 import psutil
+import win32com.client
 import win32gui
 import win32process
 
@@ -73,12 +74,13 @@ with open(F, 'r') as f:
 
 
 
-def legal_time(now):
+def halt_time(now):
     """ Determines whether ``now`` is within valid time limits, as
     EARLIEST < now < LATEST.
 
     :param now: time to test against
     :type now: instance of datetime.datetime or datetime.time
+    :trype: ``True`` if time is legal, ``False`` if time is illegal
     """
     if isinstance(now, datetime.datetime):
         return EARLIEST < now.time() < LATEST
@@ -88,13 +90,13 @@ def legal_time(now):
         raise TypeError('{} is not a datetime.datetime or'
                         ' datetime.time!'.format(now))
 
-def legal_prx(foreground):
-    """ Determines if ``foreground`` is a permitted process by reading
-    permissible list from prx.json file.
-
-    :param foreground: process to judge
+def halt_prx():
+    """ Determines if there is a halting process active.
+    
+    :rtype: ``True`` if there is a halt process running,
+            ``False`` if there is not.
     """
-    return foreground in halt_shutdown
+    return any([i in halt_shutdown for i in get_running_prx()])
 
 def prompt(foreground):
     """ Asks user if ``foreground`` is a legal process.
@@ -112,6 +114,10 @@ def prompt(foreground):
         halt_shutdown.append(foreground)
     no_prompt.append(foreground)
 
+def get_running_prx():
+    wmi=win32com.client.GetObject('winmgmts:')
+    return {p.Name for p in wmi.InstancesOf('win32_process')}
+
 def prompted(foreground):
     if foreground not in no_prompt:
         prompt(foreground)
@@ -122,38 +128,13 @@ def shutdown():
     return subprocess.run(['shutdown', '-s', '-t', '120'])
 
 def shutdown_query():
-    """ Determines if the conditions to shutdown have been met.
-
-    These are order specific, as:
-        Have we asked about this process before?
-        Is this process alowed?
-        Are we inside legal time?
-
-    Program will wait 1 minute and see if the same application is still open.
-    If it is, the machine will be told to shutdown.
-    """
+    """ Determines if the conditions to shutdown have been met. """
     foreground = active_window_process_name()
     now = datetime.datetime.now().time()
-
-    # If all the conditions are met, shutdown:  (Note this is order-specific)
-    if prompted(foreground) and not legal_prx(foreground)\
-    and not legal_time(now):
-        stop_time = datetime.datetime.now() + datetime.timedelta(seconds=10)
-        iter_time = datetime.datetime.now()
-
-        # While still timing...
-        while iter_time < stop_time:
-            time.sleep(0.05)
-            # If the user leaves the bad active window...
-            if foreground != active_window_process_name():
-                # Reset (return None...)
-                return None
-            # Update time for the loop...
-            iter_time = datetime.datetime.now()
-
-        # Otherwise...
+    # If there's no process stopping us from shutting down, and it'same
+    # time to shutdown, do it:
+    if not halt_prx() and not halt_time(now):
         return shutdown()
-
     # We didn't satisfy the conditions to begin with, so leave...
     return None
 
@@ -172,32 +153,28 @@ def active_window_process_name():
         else:
             return pname
 
-
 def main():
-    """ Main execution loop. """
-    # If time is after EARLIEST and before LATEST, wait for some time:
+    """ Main execution loop.
+    
+    While sleeping, (outside restriction time,) program checks every
+    5 seconds for what the user is doing so it's possible to profile
+    all applications the user is likely to use when inside restriction time.
+    """
+    # If we need to delay:
     if datetime.datetime.combine(datetime.date.today(), EARLIEST) < \
     datetime.datetime.now() < \
     datetime.datetime.combine(datetime.date.today(), LATEST):
-        # Sleep until it's time to do stuff:
-        sleep = (datetime.datetime.combine(datetime.date.today(), LATEST) - \
-                 datetime.datetime.now()).total_seconds()
-    # Else, start right now:
-    else:
-        sleep = 0
+        # While still time to delay:
+        while datetime.datetime.now() < \
+        datetime.datetime.combine(datetime.date.today(), LATEST):
+            # Sleep for 5 seconds, then see if we've already profiled this
+            # process:
+            time.sleep(5)
+            _ = prompted(active_window_process_name())
 
-    response = ctypes.windll.user32.MessageBoxW(None,
-                                                "You're being watched.\nSleepi"
-                                                "ng for {} seconds.".\
-                                                format(round(sleep)),
-                                                "Self Controller",
-                                                MB_OK | ICON_INFO)
-    # Sleep seems to be off than less than 1 millisecond after 60s of sleeping,
-    # so this can't realistically be an issue:
-    time.sleep(sleep)
-
+    # When in normal execution, check every 5th of a second:
     while True:
-        time.sleep(0.1)
+        time.sleep(0.2)
         response = shutdown_query()
         if response and response.returncode != 0:
             raise ValueError('Shutdown returned non-zero exit code: '

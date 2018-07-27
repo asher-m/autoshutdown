@@ -1,6 +1,7 @@
 {
     "halt_shutdown": [
-        "dota2.exe"
+        "dota2.exe",
+        "factorio.exe"
     ],
     "no_prompt": [
         "python.exe",
@@ -20,6 +21,7 @@
         "ShellExperienceHost.exe",
         "ApplicationFrameHost.exe",
         "SearchUI.exe",
-        "dota2.exe"
+        "dota2.exe",
+        "factorio.exe"
     ]
 }
