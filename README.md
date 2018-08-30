@@ -9,6 +9,8 @@ When inside the user's bedtime, the script compares the list of processes on the
 
 This script was intended to be run on Windows via Python's headless interface, (pythonw.exe.)  It was developed for Python3, though will likely work with Python2.7 as well.
 
+The included process list is an example of what one may have in that list.
+
 ## Dependencies
 ### Non-standard dependencies:
 * psutil
