@@ -61,7 +61,7 @@ def main():
             sleeptime = (badtime_tomorrow - now).total_seconds()
 
         # Sleep for that time...
-        print(f'Sleep for {sleeptime} seconds...')
+        print(f'Sleeping for {sleeptime} seconds...')
         time.sleep(sleeptime)
 
     while True:
