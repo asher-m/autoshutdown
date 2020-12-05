@@ -50,22 +50,23 @@ def main():
     if not badtimes[0] <= now.time() <= badtimes[-1]:
         if now.time() < badtimes[0]:
             # Sleep until later today (case after midnight before bedtime):
-            time.sleep(
-                (
-                    dt.datetime.combine(dt.date.today(), badtimes[0]) -
-                    dt.datetime.combine(dt.date.today(), now.time())
-                ).total_seconds()
-            )  # I hate this formatting...
+            sleeptime = (dt.datetime.combine(dt.date.today(), badtimes[0]) -
+                         dt.datetime.combine(dt.date.today(), now.time())).total_seconds()
         else:  # now.time() > badtimes[-1]:
             badtime_tomorrow = dt.datetime.combine(
                 now + dt.timedelta(days=1),
                 badtimes[0]
             )
             # Sleep until tomorrow's bedtime (ie., after midnight):
-            time.sleep((badtime_tomorrow - now).total_seconds())
+            sleeptime = (badtime_tomorrow - now).total_seconds()
+
+        # Sleep for that time...
+        print(f'Sleep for {sleeptime} seconds...')
+        time.sleep(sleeptime)
 
     while True:
         # Then start shutdown clock:
+        print('Trying shutdown...')
         subprocess.run(shutdown.split())
 
         # Ask if the user wants a delay:
@@ -77,8 +78,10 @@ def main():
         )
         if response == ID_YES:
             subprocess.run(shutdown_abort.split())
-            time.sleep(5)
+            print(f'Sleeping for another 600 seconds for snooze...')
+            time.sleep(600)
         else:
+            print('Shutdown not aborted, closing...')
             break
 
 
