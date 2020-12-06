@@ -90,7 +90,7 @@ def main():
         # Check if it's time to shutdown:
         while halt() is True:
             print('Shutdown-halting process open.  Waiting...')
-            time.sleep(1.)
+            time.sleep(5)
 
         # Then start shutdown clock:
         print('Trying shutdown...')
