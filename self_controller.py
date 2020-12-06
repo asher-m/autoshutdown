@@ -8,10 +8,11 @@ Created on Sat Dec  5 14:18:25 2020
 import ctypes
 import datetime as dt
 import json
+import os
 import subprocess
 import time
 
-import win32com.client
+import psutil
 
 # ctypes promtps:
 MB_OK = 0x0
@@ -46,7 +47,7 @@ badtimes = (  # badtimes[0] <= bad <= badtimes[-1]
 shutdown = 'shutdown -s -t 60'
 shutdown_abort = 'shutdown -a'
 
-processfile = 'processes.json'
+processfile = os.path.join(os.path.dirname(__file__), 'processes.json')
 
 
 # Open halt process file:
@@ -56,8 +57,7 @@ with open(processfile, 'r') as fp:
 
 def running_processes():
     """Get running processes."""
-    wmi = win32com.client.GetObject('winmgmts:')
-    return {p.Name for p in wmi.InstancesOf('win32_process')}
+    return {proc.name() for proc in psutil.process_iter()}
 
 
 def halt():
