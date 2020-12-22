@@ -78,7 +78,7 @@ def get_processes(processlines):
     """Get processes in process file lines.
 
     Make them lowercase to compare to running processes."""
-    return {p.lower() for p in processlines}
+    return {p.lower().strip() for p in processlines}
 
 
 def get_processes_running():
