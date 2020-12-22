@@ -1,0 +1,2 @@
+bedtime:00:30
+wuptime:06:30

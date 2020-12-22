@@ -1,0 +1,3 @@
+dota2.exe
+factorio.exe
+rdr2.exe
