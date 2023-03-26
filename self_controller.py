@@ -45,33 +45,33 @@ def main():
 
 
 def get_times(timelines):
-    """Decide bedtime and wuptime from timelines.
+    """Decide end and beginning times for system usage.
 
     Works by:
-    1: Look if wuptime can mean today (ie., wuptime >= now) it is, else tomorrow.
-    2: If bedtime on the day of wuptime is <= wuptime, it is, else it is the day before."""
+    1: Beg is today if beg >= now, else tomorrow.
+    2: End is on the day of beg if end <= beg, else it is the day before."""
     today = datetime.datetime.now().date()
     tomorrow = today + datetime.timedelta(days=1)
     now = datetime.datetime.now()
+
+    m_beg = re.match(r'beg:(\d{1,2}):(\d{1,2})', timelines[1])
+    t_beg = datetime.time(int(m_beg.group(1)), int(m_beg.group(2)))
+    m_end = re.match(r'end:(\d{1,2}):(\d{1,2})', timelines[0])
+    t_end = datetime.time(int(m_end.group(1)), int(m_end.group(2)))
+
     # decide day of wuptime
-    m_wuptime = re.match(r'wuptime:(\d{1,2}):(\d{1,2})', timelines[1])
-    t_wuptime = datetime.time(int(m_wuptime.group(1)), int(m_wuptime.group(2)))
-    if datetime.datetime.combine(today, t_wuptime) >= now:
-        wuptime = datetime.datetime.combine(today, t_wuptime)
+    if datetime.datetime.combine(today, t_beg) >= now:
+        beg = datetime.datetime.combine(today, t_beg)
     else:
-        wuptime = datetime.datetime.combine(tomorrow, t_wuptime)
+        beg = datetime.datetime.combine(tomorrow, t_beg)
 
     # decide day of bedtime
-    m_bedtime = re.match(r'bedtime:(\d{1,2}):(\d{1,2})', timelines[0])
-    t_bedtime = datetime.time(int(m_bedtime.group(1)), int(m_bedtime.group(2)))
-
-    if datetime.datetime.combine(wuptime.date(), t_bedtime) <= wuptime:
-        bedtime = datetime.datetime.combine(wuptime.date(), t_bedtime)
+    if datetime.datetime.combine(beg.date(), t_end) <= beg:
+        end = datetime.datetime.combine(beg.date(), t_end)
     else:
-        bedtime = datetime.datetime.combine(
-            wuptime.date() - datetime.timedelta(days=1), t_bedtime)
+        end = datetime.datetime.combine(beg.date() - datetime.timedelta(days=1), t_end)
 
-    return bedtime, wuptime
+    return end, beg
 
 
 def get_processes(processlines):
