@@ -1,3 +1,5 @@
 dota2.exe
 factorio.exe
+r5apex.exe
 rdr2.exe
+subnautica.exe
