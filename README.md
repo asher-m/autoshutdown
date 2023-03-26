@@ -33,7 +33,7 @@ autoshutdown can be run in any base Python, approximately 3.6+.  Accordingly, I 
 3. Navigate to `%AppData%\Microsoft\Windows\Start Menu\Programs\Startup\`, Right Click and select Paste Shortcut.
 4. Right Click on the shortcut and select Properties.  Modify the shortcut such that the Target line starts with the executable (path to pythonw.exe), followed by a space, followed by the path to `autoshutdown.py`.
 
-For example, the target line in my shortcut is as follows: `%userprofile%\.miniconda3\pythonw.exe %userprofile%/Git/autoshutdown/self-controller.py`.  Microsoft has finally decided to allow forward slashes as valid path tokens, so fordward and backslashes shouldn't (and do not) make a difference.
+For example, the target line in my shortcut is as follows: `%userprofile%\.miniconda3\pythonw.exe %userprofile%/Git/autoshutdown/autoshutdown.py`.  Microsoft has finally decided to allow forward slashes as valid path tokens, so fordward and backslashes shouldn't (and do not) make a difference.
 
 If you'd like to test the script and the shortcut, you can change the target of the shortcut from pythonw.exe to python.exe, which will spawn a python console and print some debugging information, (normally suppressed by lack of reporting console.)
 
