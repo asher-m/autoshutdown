@@ -1,18 +1,9 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Dec  5 14:18:25 2020
-
-@author: asher
-"""
-
 import datetime
-import json
 import os
+import psutil
 import re
 import subprocess
 import time
-
-import psutil
 
 
 shutdown = r'shutdown -s -t {}'
@@ -23,23 +14,23 @@ def main():
     # Wait until it's a bad time:
     now = datetime.datetime.now()
 
-    if bedtime <= now <= wuptime:
+    if end <= now <= beg:
         sleeptime = 0
     else:
-        sleeptime = (bedtime - now).total_seconds()
+        sleeptime = (end - now).total_seconds()
 
-    print(f'Sleeping for {int(sleeptime)} seconds...')
+    print(f'Sleeping for {int(sleeptime)} seconds until {end}...')
     time.sleep(sleeptime)
 
     if delay() is True:
-        wait_for_shutdown = 30 * 60  # seconds
-        print(f'Got delay, setting shutdown in {int(wait_for_shutdown / 60):d}'
+        wait = 30 * 60  # seconds
+        print(f'Got delay, setting shutdown in {int(wait / 60):d}'
               ' minutes...')
     else:
-        wait_for_shutdown = 3 * 60  # seconds
-        print(f'Got no delay, setting shutdown in {int(wait_for_shutdown / 60):d}'
+        wait = 3 * 60  # seconds
+        print(f'Got no delay, setting shutdown in {int(wait / 60):d}'
               ' minutes...')
-    subprocess.run(shutdown.format(wait_for_shutdown).split())
+    subprocess.run(shutdown.format(wait).split())
 
     input('Press ENTER to close...')
 
@@ -95,7 +86,7 @@ def delay():
 
 if __name__ == '__main__':
     with open(os.path.join(os.path.dirname(__file__), 'times.txt'), 'r') as fp:
-        bedtime, wuptime = get_times(fp.readlines())
+        end, beg = get_times(fp.readlines())
 
     with open(os.path.join(os.path.dirname(__file__), 'processes.txt'), 'r') as fp:
         processes = get_processes(fp.readlines())
